@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\vaiSubir;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\viewtable;
-
+use App\Jobs\Insercao;
+use App\Jobs\PrepararInsercao;
+use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,6 +19,15 @@ use App\Http\Controllers\viewtable;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/teste', function () {
+
+    $cidades = DB::connection('mysql_secondary')
+        ->select('select fi.id, fi.nomeFantasia from filial as fi where grupo = 1 or grupo = 4');
+
+    PrepararInsercao::dispatch($cidades);
+    return "Preparando as filas";
 });
 
 Route::get('/viewtable', [viewtable::class, 'listarDados']);
